@@ -1,9 +1,6 @@
 package servlet;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -30,7 +27,6 @@ public class GoodsServlet extends HttpServlet {
     public GoodsServlet() {
     	super();
         // TODO Auto-generated constructor stub
-		testPrint("goods1");
 
     }
 
@@ -41,7 +37,6 @@ public class GoodsServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		response.setContentType("text/html;charset=utf-8"); 
 		response.getWriter().append("Served at: ").append(request.getContextPath());
-		testPrint("goods2");
 		//addGoods();
 		try {
 			readGoods(request, response);
@@ -49,8 +44,6 @@ public class GoodsServlet extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		RequestDispatcher dispatcher = request.getRequestDispatcher("upload.jsp");
-//		dispatcher.forward(request, response);
 	}
 
 	/**
@@ -58,32 +51,23 @@ public class GoodsServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		testPrint("goods3");
 
 		doGet(request, response);
 	}
 	
-//	private void addGoods() throws IOException {
-//		GoodsBean goodsBean = new GoodsBean();
-//		String picturePath = this.getServletContext().getRealPath("first.PNG");
-//		File picture = new File(picturePath);
-//		System.out.println(picture.exists());
-//		InputStream inputStream = new FileInputStream(picture);
-//		goodsBean.setInputStream(inputStream);
-//		goodsBean.setId("1");
-//		goodsBean.setName("test");
-//		goodsBean.setProduct("东北");
-//		goodsBean.setType("aa");
-//		goodsBean.setTypeNumber("11");
-//		goodsBean.setDescription("bb");
-//				Database database = new Database("goods");
-//		database.add(sql, goodsBean);
-//	}
-	
+	/**
+	 * 读取数据库中的内容，将其传到goods.jsp页面
+	 * @param request
+	 * @param response
+	 * @throws SQLException
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	private void readGoods(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
-		Database database = new Database();
+		Database database = new Database("goods");
 		ArrayList<GoodsBean> goodsList = new ArrayList<>();
-		ResultSet resultSet = database.querry("");
+		String sql = "SELECT path,id,name,product,type,typeNumber,address,description FROM goodsinfo";
+		ResultSet resultSet = database.querry(sql);
 		while(resultSet.next()) {
 			GoodsBean goods = new GoodsBean();
 			goods.setPath(resultSet.getString("path"));
@@ -92,6 +76,7 @@ public class GoodsServlet extends HttpServlet {
 			goods.setProduct(resultSet.getString("product"));
 			goods.setType(resultSet.getString("type"));
 			goods.setTypeNumber(resultSet.getString("typeNumber"));
+			goods.setAddress(resultSet.getString("address"));
 			goods.setDescription(resultSet.getString("description"));
 			goodsList.add(goods);
 		}
@@ -100,7 +85,5 @@ public class GoodsServlet extends HttpServlet {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("goods.jsp");
 		dispatcher.forward(request, response);
 	}
-	private void testPrint(String s) {
-		System.out.println(s);
-	}
+
 }

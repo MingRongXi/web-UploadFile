@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,16 +22,16 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import other.Database;
 
 /**
- * Servlet implementation class UpdateServlet
+ * Servlet implementation class UploadServlet
  */
-@WebServlet("/UpdateServlet")
-public class UpdateServlet extends HttpServlet {
+@WebServlet("/UploadServlet")
+public class UploadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
     /**
      * Default constructor. 
      */
-    public UpdateServlet() {
+    public UploadServlet() {
         // TODO Auto-generated constructor stub
     }
 
@@ -58,6 +59,7 @@ public class UpdateServlet extends HttpServlet {
 	}
 
 	private void uploadFile(HttpServletRequest request, HttpServletResponse response) throws FileUploadException, IOException {
+		//文件储存路径为项目中的一个文件夹
 		String savePath = "C:\\Users\\dell\\eclipse-workspace\\Experiment2\\WebContent\\Image";
 		File file = new File(savePath);
 		if(!file.exists() && !file.isDirectory()) {
@@ -87,11 +89,13 @@ public class UpdateServlet extends HttpServlet {
 				}
 				
 				try {
+					//为了防止重名，将获得的文件使用随机数命名
 					filename = System.currentTimeMillis()+".jpg";
 					InputStream inputStream = item.getInputStream();
 					FileOutputStream outputStream;
+					
+					//储存路径 = 文件所在位置 + 文件名
 					target = savePath + "/" + filename;
-					//String saveInDB = "file://" + target;
 					information.add(filename);
 					outputStream = new FileOutputStream(target);
 					byte buffer[] = new byte[1024];
@@ -105,34 +109,26 @@ public class UpdateServlet extends HttpServlet {
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
-//				request.setAttribute("message", message);
-//				try {
-//					request.getRequestDispatcher("upload.jsp").forward(request, response);
-//				} catch (ServletException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
 			}
 			
 			else {
-				String name = item.getFieldName();
 				String value = item.getString("UTF-8");
 				information.add(value);
 			}
 		}
-		System.out.println(request.getParameter("method"));
-		Database database = new Database();
+		
+		//如果增加商品，使用增加的sql语句
+		Database database = new Database("goods");
 		if(request.getParameter("method").equals("add")) {
-			database.add(information);
+			String sql = "INSERT INTO goodsinfo(path,id,name,product,type,typeNumber,address,description)values(?,?,?,?,?,?,?,?)";
+			database.add(sql,information);
 
 		}
-		else if(request.getParameter("method").equals("modify")) {
-			System.out.println(request.getParameter("id"));
-			database.update(request.getParameter("id"), information);
-		}
-
-		for(String i: information) {
-			System.out.println("s" + i);
+		//如果是更新图片，就是用修改的sql语句
+		else if(request.getParameter("method").equals("update")) {
+			String id = request.getParameter("id");
+			String sql = "UPDATE goodsinfo set path=? WHERE id="+id;
+			database.update(sql, information);
 		}
 	}
 }

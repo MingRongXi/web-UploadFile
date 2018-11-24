@@ -1,7 +1,6 @@
 package other;
 //将类的各种信息封装到javabean里
 public class GoodsBean {
-//	public byte[] image;
 	private String path;
 	private String id;
 	private String name;
@@ -9,13 +8,8 @@ public class GoodsBean {
 	private String type;
 	private String typeNumber;
 	private String description;
-	
-//	public byte[] getImage() {
-//		return image;
-//	}
-//	public void setImage(String path) {
-//		//FileOutputStream
-//	}
+	private String address;
+
 	public String getPath() {
 		return path;
 	}
@@ -51,6 +45,13 @@ public class GoodsBean {
 	}
 	public void setTypeNumber(String typeNumber) {
 		this.typeNumber = typeNumber;
+	}
+	
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
 	}
 	
 	public String getDescription() {

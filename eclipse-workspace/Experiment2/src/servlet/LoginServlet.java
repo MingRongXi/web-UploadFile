@@ -10,11 +10,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.websocket.Session;
+
 
 import other.Database;
-import other.Database2;
 
 /**
  * Servlet implementation class LoginServlet
@@ -22,8 +20,6 @@ import other.Database2;
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final String DB_Name = "loginformation";
-	//private int 
     /**
      * Default constructor. 
      */
@@ -45,15 +41,10 @@ public class LoginServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		//如果用户输入正确的信息，则跳转到商品展示页面
 		if(check(request, response)) {
-//			RequestDispatcher dispatcher = request.getRequestDispatcher("GoodsServlet");
-//			dispatcher.forward(request, response);
-//			String id = request.getParameter("id");
-//			HttpSession session = request.getSession();
-//			session.setAttribute("id", id);
 			response.sendRedirect("GoodsServlet");
-//			RequestDispatcher dispatcher = request.getRequestDispatcher("upload.jsp");
-//			dispatcher.forward(request, response);
+
 		}
 		else {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
@@ -61,11 +52,18 @@ public class LoginServlet extends HttpServlet {
 		}
 	}
 	
+	/**
+	 * 查询数据库，判断用户输入的账号和密码是否正确
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	private boolean check(HttpServletRequest request, HttpServletResponse response) {
 		String id = request.getParameter("id");
 		String password = request.getParameter("password");
-		Database2 customer = new Database2();
-		ResultSet resultSet = customer.querry(id);
+		Database customer = new Database("loginformation");
+		String sql = "SELECT * FROM id_password WHERE id = " + id;
+		ResultSet resultSet = customer.querry(sql);
 		String rigthPassword = "";
 
 		try {
@@ -76,7 +74,6 @@ public class LoginServlet extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(password.equals(rigthPassword));
 		return (password.equals(rigthPassword));
 	}
 }
